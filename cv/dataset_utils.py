@@ -193,8 +193,8 @@ class SplitYoloV5Dataset:
 
         assert check_sum == 1.0, "Split proportion is not equal to 1.0"
 
-        for folder in folders:
-            try:
+        try:
+            for folder in folders:
                 # update folder path based on split_save_path
                 folder_save = os.path.join(self.split_save_path, folder)
                 Path(folder_save).mkdir(parents=True, exist_ok=False)
@@ -202,13 +202,13 @@ class SplitYoloV5Dataset:
                 Path(temp_label_dir).mkdir(parents=True, exist_ok=False)
                 temp_image_dir = os.path.join(folder_save, self.image_dir_name)
                 Path(temp_image_dir).mkdir(parents=True, exist_ok=False)
-            except FileExistsError as e:
-                print(
-                    f"The folder '{folder}' already exists..please delete it for new split")
-            limit = round(len(files) * folders[folder])
-            for fil in files[self.lower_limit:self.lower_limit + limit]:
-                self.copyfiles(fil, folder_save)
-            self.lower_limit = self.lower_limit + limit
+
+                limit = round(len(files) * folders[folder])
+                for fil in files[self.lower_limit:self.lower_limit + limit]:
+                    self.copyfiles(fil, folder_save)
+                self.lower_limit = self.lower_limit + limit
+        except FileExistsError as e:
+            print("The folders exist...delete them first for new split")
 
 
 if __name__ == "__main__":
