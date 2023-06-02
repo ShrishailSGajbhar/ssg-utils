@@ -55,6 +55,39 @@ def draw_image(img, bboxes):
         draw.rectangle(bbox, outline="red", width=2)
     return img
 
+def get_filenames_for_label(annotations_path, label_name):
+    """
+    This function returns the list of all filenames for the given label 
+    in annotations path where xml files are stored. This function is written
+    to debug and correct the inconsistent labeling that may happen.
+
+    Args:
+        annotations_path (str): annotations folder with xml files
+        label_name (str): label name to be searched
+    
+    Returns:
+        list: List of filenames/filepaths containing input label name
+    """
+    # identify all the xml files in the annotations folder (input directory)
+    files = glob.glob(os.path.join(annotations_path, '*.xml'))
+    result = []
+    # loop through each
+    for fil in files:
+        basename = os.path.basename(fil)
+        filename = os.path.splitext(basename)[0]
+        # print(f"curent filename: {filename}")
+        # Initialize the list to store the xml filenames
+        
+        # parse the content of the xml file
+        tree = ET.parse(fil)
+        root = tree.getroot()
+
+        for obj in root.findall('object'):
+            label = obj.find("name").text
+            # print(f"current filename label: {label}")
+            if label==label_name:
+                result.append(filename+".xml")
+    return result
 
 class PascalVOCToYoloV5():
 
